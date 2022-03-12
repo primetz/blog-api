@@ -6,14 +6,16 @@ use JetBrains\PhpStorm\Pure;
 
 class User implements UserInterface
 {
-    private ?int $id = null;
+    private ?int $id;
 
     public function __construct(
         private string $firstName,
         private string $lastName,
         private string $email,
+        int $id = null
     )
     {
+        $this->id = $id;
     }
 
     #[Pure] public function __toString(): string

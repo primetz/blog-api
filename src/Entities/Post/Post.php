@@ -2,18 +2,20 @@
 
 namespace App\Entities\Post;
 
-use App\Entities\User\User;
 use JetBrains\PhpStorm\Pure;
 
 class Post implements PostInterface
 {
+    private ?int $id;
+
     public function __construct(
-        private int $id,
-        private User $author,
+        private int $authorId,
         private string $title,
         private string $text,
+        int $id = null,
     )
     {
+        $this->id = $id;
     }
 
     #[Pure] public function __toString(): string
@@ -21,20 +23,20 @@ class Post implements PostInterface
         return sprintf(
             '[%d] %s %s %s',
             $this->getId(),
-            $this->getAuthor(),
+            $this->getAuthorId(),
             $this->getTitle(),
             $this->getText()
         );
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getAuthor(): User
+    public function getAuthorId(): int
     {
-        return $this->author;
+        return $this->authorId;
     }
 
     public function getTitle(): string
