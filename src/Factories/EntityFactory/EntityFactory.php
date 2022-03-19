@@ -2,6 +2,8 @@
 
 namespace App\Factories\EntityFactory;
 
+use App\Decorators\CommentDecorator\CommentDecorator;
+use App\Decorators\PostDecorator\PostDecorator;
 use App\Decorators\UserDecorator\UserDecorator;
 use App\Entities\EntityInterface;
 use App\Enums\Argument;
@@ -46,8 +48,8 @@ class EntityFactory implements EntityFactoryInterface
     {
         return match ($entityType) {
             Argument::USER->value => $this->userFactory->create(new UserDecorator($arguments)),
-//            Argument::ARTICLE->value => $this->articleFactory->create(new ArticleDecorator($arguments)),
-//            Argument::COMMENT->value => $this->articleFactory->create(new CommentDecorator($arguments)),
+            Argument::POST->value => $this->postFactory->create(new PostDecorator($arguments)),
+            Argument::COMMENT->value => $this->commentFactory->create(new CommentDecorator($arguments)),
             default => throw new MatchException(
                 sprintf(
                     'The argument must contain one of the listed values: %s',

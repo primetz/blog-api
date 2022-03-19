@@ -8,13 +8,16 @@ use JetBrains\PhpStorm\Pure;
 
 class Comment implements CommentInterface
 {
+    private ?int $id;
+
     public function __construct(
-        private int $id,
-        private User $author,
-        private Post $post,
+        private int $authorId,
+        private int $postId,
         private string $text,
+        int $id = null,
     )
     {
+        $this->id = $id;
     }
 
     #[Pure] public function __toString(): string
@@ -22,25 +25,25 @@ class Comment implements CommentInterface
         return sprintf(
             '[%d] %s %s %s',
             $this->getId(),
-            $this->getAuthor(),
-            $this->getPost(),
+            $this->getAuthorId(),
+            $this->getPostId(),
             $this->getText()
         );
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getAuthor(): User
+    public function getAuthorId(): int
     {
-        return $this->author;
+        return $this->authorId;
     }
 
-    public function getPost(): Post
+    public function getPostId(): int
     {
-        return $this->post;
+        return $this->postId;
     }
 
     public function getText(): string

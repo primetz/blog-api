@@ -3,11 +3,10 @@
 namespace App\Entities\Post;
 
 use App\Entities\EntityInterface;
-use App\Entities\User\User;
 
 interface PostInterface extends EntityInterface
 {
-    public function getAuthor(): User;
+    public function getAuthorId(): int;
 
     public function getTitle(): string;
 

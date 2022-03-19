@@ -49,20 +49,21 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
     /**
      * @throws UserNotFoundException
      */
-    private function getUser(PDOStatement $statement, int $userID): UserInterface
+    private function getUser(PDOStatement $statement, int $userId): UserInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
             throw new UserNotFoundException(
-                sprintf('Cannot find user with id: %s', $userID)
+                sprintf('Cannot find user with id: %s', $userId)
             );
         }
 
         return new User(
             $result['first_name'],
             $result['last_name'],
-            $result['email']
+            $result['email'],
+            $result['id']
         );
     }
 }

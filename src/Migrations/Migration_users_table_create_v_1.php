@@ -2,19 +2,8 @@
 
 namespace App\Migrations;
 
-use App\Connections\ConnectorInterface;
-use App\Connections\SqlLiteConnector\SqlLiteConnector;
-use JetBrains\PhpStorm\Pure;
-
-class Migration_users_table_create_v_1 implements MigrationInterface
+class Migration_users_table_create_v_1 extends Migration implements MigrationInterface
 {
-    private ConnectorInterface $connector;
-
-    #[Pure] public function __construct(ConnectorInterface $connector = null)
-    {
-        $this->connector = $connector ?? new SqlLiteConnector();
-    }
-
     public function execute(): void
     {
         $this->connector->getConnection()->query(
