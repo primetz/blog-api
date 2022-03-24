@@ -18,7 +18,7 @@ class CommentRepository extends EntityRepository implements CommentRepositoryInt
      */
     public function get(int $id): EntityInterface
     {
-        $statement = $this->connector->getConnection()
+        $statement = $this->connection
             ->prepare(
                 'SELECT * FROM comments WHERE id = :id'
             );
@@ -35,7 +35,7 @@ class CommentRepository extends EntityRepository implements CommentRepositoryInt
      */
     public function save(EntityInterface $entity): void
     {
-        $statement = $this->connector->getConnection()
+        $statement = $this->connection
             ->prepare(
                 'INSERT INTO comments (author_id, post_id, text) VALUES (:author_id, :post_id, :text)'
             );

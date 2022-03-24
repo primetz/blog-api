@@ -18,7 +18,7 @@ class PostRepository extends EntityRepository implements PostRepositoryInterface
      */
     public function get(int $id): EntityInterface
     {
-        $statement = $this->connector->getConnection()
+        $statement = $this->connection
             ->prepare(
                 'SELECT * FROM posts WHERE id = :id'
             );
@@ -35,7 +35,7 @@ class PostRepository extends EntityRepository implements PostRepositoryInterface
      */
     public function save(EntityInterface $entity): void
     {
-        $statement = $this->connector->getConnection()
+        $statement = $this->connection
             ->prepare(
                 'INSERT INTO posts (author_id, title, text) VALUES (:author_id, :title, :text)'
             );

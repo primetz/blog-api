@@ -17,7 +17,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
      */
     public function get(int $id): EntityInterface
     {
-        $statement = $this->connector->getConnection()
+        $statement = $this->connection
             ->prepare(
                 'SELECT * FROM users WHERE id = :id'
             );
@@ -34,7 +34,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
      */
     public function save(EntityInterface $entity): void
     {
-        $statement = $this->connector->getConnection()
+        $statement = $this->connection
             ->prepare(
                 'INSERT INTO users (first_name, last_name, email) VALUES (:first_name, :last_name, :email)'
             );
