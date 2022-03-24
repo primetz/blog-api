@@ -2,9 +2,9 @@
 
 namespace App\Connections;
 
-use PDO;
+use App\Drivers\ConnectionInterface;
 
 interface ConnectorInterface
 {
-    public function getConnection(): PDO;
+    public function getConnection(): ConnectionInterface;
 }

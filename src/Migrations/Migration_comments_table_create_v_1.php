@@ -2,10 +2,6 @@
 
 namespace App\Migrations;
 
-use App\Connections\ConnectorInterface;
-use App\Connections\SqlLiteConnector\SqlLiteConnector;
-use JetBrains\PhpStorm\Pure;
-
 class Migration_comments_table_create_v_1 extends Migration implements MigrationInterface
 {
     public function execute(): void

@@ -2,8 +2,6 @@
 
 namespace App\Entities\Comment;
 
-use App\Entities\Post\Post;
-use App\Entities\User\User;
 use JetBrains\PhpStorm\Pure;
 
 class Comment implements CommentInterface

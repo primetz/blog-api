@@ -6,7 +6,6 @@ use App\Decorators\Decorator;
 use App\Decorators\DecoratorInterface;
 use App\Exceptions\ArgumentException;
 use App\Exceptions\CommandException;
-use App\Services\ArgumentParserServiceInterface;
 
 class CommentDecorator extends Decorator implements DecoratorInterface
 {
