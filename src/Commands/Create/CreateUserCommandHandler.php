@@ -6,11 +6,14 @@ use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
 use App\Connections\ConnectorInterface;
+use App\Entities\EntityInterface;
 use App\Entities\User\User;
 use App\Exceptions\UserEmailExistException;
 use App\Exceptions\UserNotFoundException;
 use App\Repositories\UserRepository\UserRepository;
 use App\Repositories\UserRepository\UserRepositoryInterface;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 
 final class CreateUserCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
@@ -45,11 +48,10 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
             );
         }
 
-        $this->statement->execute([
-            ':firstName' => $user->getFirstName(),
-            ':lastName' => $user->getLastName(),
-            ':email' => $email,
-        ]);
+        $this->connection->executeQuery(
+            $this->getSql(),
+            $this->getParams($user)
+        );
     }
 
     private function isUserExists(string $email): bool
@@ -63,8 +65,22 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
         return true;
     }
 
-    protected function getSql(): string
+    public function getSql(): string
     {
         return 'INSERT INTO users (first_name, last_name, email) VALUES (:firstName, :lastName, :email)';
+    }
+
+    #[Pure]
+    #[ArrayShape([':firstName' => "string", ':lastName' => "string", ':email' => "string"])]
+    public function getParams(EntityInterface $entity): array
+    {
+        /**
+         * @var User $entity
+         */
+        return [
+            ':firstName' => $entity->getFirstName(),
+            ':lastName' => $entity->getLastName(),
+            ':email' => $entity->getEmail(),
+        ];
     }
 }

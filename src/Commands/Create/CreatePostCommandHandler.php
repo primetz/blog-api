@@ -5,7 +5,10 @@ namespace App\Commands\Create;
 use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
+use App\Entities\EntityInterface;
 use App\Entities\Post\Post;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 
 final class CreatePostCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
@@ -18,15 +21,28 @@ final class CreatePostCommandHandler extends CommandHandler implements CommandHa
          */
         $post = $command->getEntity();
 
-        $this->statement->execute([
-            ':authorId' => $post->getAuthorId(),
-            ':title' => $post->getTitle(),
-            ':text' => $post->getText(),
-        ]);
+        $this->connection->executeQuery(
+            $this->getSql(),
+            $this->getParams($post)
+        );
     }
 
-    protected function getSql(): string
+    public function getSql(): string
     {
         return 'INSERT INTO posts (author_id, title, text) VALUES (:authorId, :title, :text)';
+    }
+
+    #[Pure]
+    #[ArrayShape([':authorId' => "mixed", ':title' => "mixed", ':text' => "mixed"])]
+    public function getParams(EntityInterface $entity): array
+    {
+        /**
+         * @var Post $entity
+         */
+        return [
+            ':authorId' => $entity->getAuthorId(),
+            ':title' => $entity->getTitle(),
+            ':text' => $entity->getText(),
+        ];
     }
 }

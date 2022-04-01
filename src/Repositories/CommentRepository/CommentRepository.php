@@ -27,7 +27,7 @@ class CommentRepository extends EntityRepository implements CommentRepositoryInt
             ':id' => (string) $id
         ]);
 
-        return $this->getComment($statement, $id);
+        return $this->getComment($statement);
     }
 
     /**
@@ -50,14 +50,12 @@ class CommentRepository extends EntityRepository implements CommentRepositoryInt
     /**
      * @throws CommentNotFoundException
      */
-    private function getComment(PDOStatement $statement, int $commentId): CommentInterface
+    private function getComment(PDOStatement $statement): CommentInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
-            throw new CommentNotFoundException(
-                sprintf('Cannot find comment with id: %s', $commentId)
-            );
+            throw new CommentNotFoundException('Can\'t find comment');
         }
 
         return new Comment(

@@ -21,10 +21,8 @@
         "phpunit-full": "phpunit --testdox --colors tests",
         "phpunit": "phpunit --testdox --colors"
     },
-    "require": {
-        "fakerphp/faker": "^1.19"
-    },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "fakerphp/faker": "^1.19"
     }
 }

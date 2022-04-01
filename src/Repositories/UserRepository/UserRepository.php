@@ -59,7 +59,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
         $statement->execute([
             ':first_name' => $entity->getFirstName(),
             ':last_name' => $entity->getLastName(),
-            'email' => $entity->getEmail()
+            ':email' => $entity->getEmail()
         ]);
     }
 
@@ -71,7 +71,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
-            throw new UserNotFoundException('Cannot find user');
+            throw new UserNotFoundException('Can\'t find user');
         }
 
         return new User(
