@@ -6,14 +6,12 @@ use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
 use App\Connections\ConnectorInterface;
-use App\Entities\EntityInterface;
 use App\Entities\User\User;
-use App\Exceptions\UserEmailExistException;
+use App\Entities\User\UserInterface;
+use App\Exceptions\UserEmailExistsException;
 use App\Exceptions\UserNotFoundException;
 use App\Repositories\UserRepository\UserRepository;
 use App\Repositories\UserRepository\UserRepositoryInterface;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 
 final class CreateUserCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
@@ -30,7 +28,7 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
     }
 
     /**
-     * @throws UserEmailExistException
+     * @throws UserEmailExistsException
      */
     public function handle(CommandInterface $command): void
     {
@@ -43,14 +41,14 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
         $email = $user->getEmail();
 
         if ($this->isUserExists($email)) {
-            throw new UserEmailExistException(
+            throw new UserEmailExistsException(
                 sprintf('User with email %s already exists', $email)
             );
         }
 
         $this->connection->executeQuery(
             $this->getSql(),
-            $this->getParams($user)
+            $this->getParams($command)
         );
     }
 
@@ -70,17 +68,20 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
         return 'INSERT INTO users (first_name, last_name, email) VALUES (:firstName, :lastName, :email)';
     }
 
-    #[Pure]
-    #[ArrayShape([':firstName' => "string", ':lastName' => "string", ':email' => "string"])]
-    public function getParams(EntityInterface $entity): array
+    /**
+     * @param CreateEntityCommand $command
+     */
+    public function getParams(CommandInterface $command): array
     {
         /**
-         * @var User $entity
+         * @var UserInterface $user
          */
+        $user = $command->getEntity();
+
         return [
-            ':firstName' => $entity->getFirstName(),
-            ':lastName' => $entity->getLastName(),
-            ':email' => $entity->getEmail(),
+            ':firstName' => $user->getFirstName(),
+            ':lastName' => $user->getLastName(),
+            ':email' => $user->getEmail(),
         ];
     }
 }

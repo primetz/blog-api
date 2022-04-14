@@ -5,7 +5,7 @@ namespace Tests\Commands\Create;
 use App\Commands\Create\CreateEntityCommand;
 use App\Commands\Create\CreateUserCommandHandler;
 use App\Entities\User\User;
-use App\Exceptions\UserEmailExistException;
+use App\Exceptions\UserEmailExistsException;
 use App\Repositories\UserRepository\UserRepository;
 use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +26,7 @@ class CreateUserCommandHandlerTest extends TestCase
 
         $userRepositoryStub->method('getByEmail')->willReturn($user);
 
-        $this->expectException(UserEmailExistException::class);
+        $this->expectException(UserEmailExistsException::class);
 
         $this->expectExceptionMessage(
             sprintf('User with email %s already exists', $user->getEmail())
@@ -39,7 +39,7 @@ class CreateUserCommandHandlerTest extends TestCase
 
     /**
      * @dataProvider userDataProvider
-     * @throws UserEmailExistException
+     * @throws UserEmailExistsException
      */
     public function testItItSavesUserToDatabase(
         User $user
