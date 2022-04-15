@@ -5,27 +5,21 @@ namespace App\Commands\Delete;
 use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
-use App\Connections\ConnectorInterface;
-use App\Exceptions\CommentNotFoundException;
-use App\Repositories\CommentRepository\CommentRepository;
+use App\Drivers\ConnectionInterface;
 use App\Repositories\CommentRepository\CommentRepositoryInterface;
 
 class DeleteCommentCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
-    private CommentRepositoryInterface $commentRepository;
     public function __construct(
-        ?CommentRepositoryInterface $commentRepository = null,
-        ?ConnectorInterface $connector = null
+        private ?CommentRepositoryInterface $commentRepository = null,
+        ?ConnectionInterface $connection = null
     )
     {
-        $this->commentRepository = $commentRepository ?? new CommentRepository();
-
-        parent::__construct($connector);
+        parent::__construct($connection);
     }
 
     /**
      * @param DeleteEntityCommand $command
-     * @throws CommentNotFoundException
      */
     public function handle(CommandInterface $command): void
     {

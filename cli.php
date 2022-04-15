@@ -1,14 +1,21 @@
 <?php
 
+use App\Commands\CommandHandlerInterface;
 use App\Commands\Create\CreateCommentCommandHandler;
 use App\Commands\Create\CreateEntityCommand;
 use App\Commands\Create\CreatePostCommandHandler;
 use App\Commands\Create\CreateUserCommandHandler;
 use App\Commands\CreateCommand;
+use App\Container\DIContainer;
+use App\Entities\Comment\Comment;
+use App\Entities\Post\Post;
+use App\Entities\User\User;
 use App\Enums\Argument;
 use App\Exceptions\NotFoundException;
 use App\Factories\EntityManagerFactory\EntityManagerFactory;
 use App\Factories\EntityManagerFactory\EntityManagerFactoryInterface;
+
+$container = require_once __DIR__ . '/container.php';
 
 try {
     if(count($argv) < 2)
@@ -26,11 +33,23 @@ try {
      */
     $entityManger = EntityManagerFactory::getInstance();
 
-    $commandHandler = new CreateUserCommandHandler();
+    $entity = $entityManger->createEntityByInputArguments($argv);
 
-    $commandHandler->handle(
-        new CreateEntityCommand($entityManger->createEntityByInputArguments($argv))
-    );
+    /**
+     * @var DIContainer $container
+     */
+    if (isset($container)) {
+        /**
+         * @var CommandHandlerInterface $commandHandler
+         */
+        $commandHandler = match ($entity::class) {
+            User::class => $container->get(CreateUserCommandHandler::class),
+            Post::class => $container->get(CreatePostCommandHandler::class),
+            Comment::class => $container->get(CreateCommentCommandHandler::class)
+        };
+
+        $commandHandler->handle(new CreateEntityCommand($entity));
+    }
 
 //    $command = new CreateCommand($entityManger->getRepositoryByInputArguments($argv));
 //    $command->handle($entityManger->createEntityByInputArguments($argv));

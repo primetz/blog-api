@@ -2,24 +2,16 @@
 
 namespace App\Queries;
 
-use App\Connections\ConnectorInterface;
-use App\Connections\SqlLiteConnector\SqlLiteConnector;
 use App\Drivers\ConnectionInterface;
 use App\Entities\EntityInterface;
 
 abstract class QueryHandler implements QueryHandlerInterface
 {
-    protected ConnectionInterface $connection;
-
-    private ConnectorInterface $connector;
 
     public function __construct(
-        ?ConnectorInterface $connector = null
+        protected ConnectionInterface $connection
     )
     {
-        $this->connector = $connector ?? new SqlLiteConnector();
-
-        $this->connection = $this->connector->getConnection();
     }
 
     abstract public function handle(QueryInterface $query): EntityInterface;

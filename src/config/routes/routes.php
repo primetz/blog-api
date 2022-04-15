@@ -12,18 +12,18 @@ use App\Http\Actions\Find\FindUserByEmail;
 
 return [
     'GET' => [
-        '/user/show' => new FindUserByEmail(),
-        '/post/show' => new FindPostById(),
-        '/comment/show' => new FindCommentById(),
+        '/user/show' => FindUserByEmail::class,
+        '/post/show' => FindPostById::class,
+        '/comment/show' => FindCommentById::class,
     ],
     'POST' => [
-        '/user/create' => new CreateUser(),
-        '/post/create' => new CreatePost(),
-        '/comment/create' => new CreateComment(),
+        '/user/create' => CreateUser::class,
+        '/post/create' => CreatePost::class,
+        '/comment/create' => CreateComment::class,
     ],
     'DELETE' => [
-        '/user/delete' => new DeleteUser(),
-        '/post/delete' => new DeletePost(),
-        '/comment/delete' => new DeleteComment(),
+        '/user/delete' => DeleteUser::class,
+        '/post/delete' => DeletePost::class,
+        '/comment/delete' => DeleteComment::class,
     ]
 ];

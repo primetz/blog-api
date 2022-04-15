@@ -9,15 +9,10 @@ use App\Entities\EntityInterface;
 
 abstract class EntityRepository implements EntityRepositoryInterface
 {
-    protected ConnectionInterface $connection;
-
     public function __construct(
-        ConnectorInterface $connector = null,
+        protected ?ConnectionInterface $connection = null,
     )
     {
-        $connector = $connector ?? new SqlLiteConnector();
-
-        $this->connection = $connector->getConnection();
     }
 
     abstract public function get(int $id): EntityInterface;
