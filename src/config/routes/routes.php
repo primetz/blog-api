@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Actions\Create\CreateLike;
 use App\Http\Actions\Create\CreateUser;
 use App\Http\Actions\Create\CreatePost;
 use App\Http\Actions\Create\CreateComment;
@@ -20,6 +21,7 @@ return [
         '/user/create' => CreateUser::class,
         '/post/create' => CreatePost::class,
         '/comment/create' => CreateComment::class,
+        '/like/create' => CreateLike::class
     ],
     'DELETE' => [
         '/user/delete' => DeleteUser::class,

@@ -3,17 +3,19 @@
 use App\Commands\CommandHandlerInterface;
 use App\Commands\Create\CreateCommentCommandHandler;
 use App\Commands\Create\CreateEntityCommand;
+use App\Commands\Create\CreateLikeCommandHandler;
 use App\Commands\Create\CreatePostCommandHandler;
 use App\Commands\Create\CreateUserCommandHandler;
-use App\Commands\CreateCommand;
 use App\Container\DIContainer;
 use App\Entities\Comment\Comment;
+use App\Entities\Like\Like;
 use App\Entities\Post\Post;
 use App\Entities\User\User;
-use App\Enums\Argument;
 use App\Exceptions\NotFoundException;
 use App\Factories\EntityManagerFactory\EntityManagerFactory;
 use App\Factories\EntityManagerFactory\EntityManagerFactoryInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 $container = require_once __DIR__ . '/container.php';
 
@@ -45,7 +47,8 @@ try {
         $commandHandler = match ($entity::class) {
             User::class => $container->get(CreateUserCommandHandler::class),
             Post::class => $container->get(CreatePostCommandHandler::class),
-            Comment::class => $container->get(CreateCommentCommandHandler::class)
+            Comment::class => $container->get(CreateCommentCommandHandler::class),
+            Like::class => $container->get(CreateLikeCommandHandler::class)
         };
 
         $commandHandler->handle(new CreateEntityCommand($entity));
@@ -58,7 +61,7 @@ try {
     // которое мы можем вызывать в любой момент, например мне нужно создать 3 миллиона юзеров на портале я создаю очередь которая будет каждую итерацию
     // создавать юзера, команды часто используются кроном(программа которая запускается в указанное ей время).
 
-}catch (Exception $exception)
+}catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $exception)
 {
     echo $exception->getMessage().PHP_EOL;
     http_response_code(404);

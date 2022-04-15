@@ -2,17 +2,18 @@
 
 namespace App\Migrations;
 
-use App\Connections\ConnectorInterface;
-use App\Connections\SqlLiteConnector\SqlLiteConnector;
-use JetBrains\PhpStorm\Pure;
+use App\Drivers\ConnectionInterface;
+use App\Drivers\PdoConnectionDriver\PdoConnectionDriver;
 
 abstract class Migration implements MigrationInterface
 {
-    protected ConnectorInterface $connector;
-
-    #[Pure] public function __construct(ConnectorInterface $connector = null)
+    /**
+     * @param PdoConnectionDriver|null $connection
+     */
+    public function __construct(
+        protected ?ConnectionInterface $connection = null
+    )
     {
-        $this->connector = $connector ?? new SqlLiteConnector();
     }
 
     abstract function execute(): void;
