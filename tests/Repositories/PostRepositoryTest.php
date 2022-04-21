@@ -8,6 +8,7 @@ use App\Repositories\PostRepository\PostRepository;
 use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
 use Tests\DummyConnectorTrait;
+use Tests\DummyLogger;
 
 class PostRepositoryTest extends TestCase
 {
@@ -15,11 +16,8 @@ class PostRepositoryTest extends TestCase
 
     public function testItThrowsAPostNotFoundExceptionWhenPostNotFoundById(): void
     {
-        $this->PDOMock
-            ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
-
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn(false);
 
@@ -27,7 +25,10 @@ class PostRepositoryTest extends TestCase
 
         $this->expectExceptionMessage('Can\'t find post');
 
-        $postRepository = new PostRepository($this->dummyConnector);
+        $postRepository = new PostRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $postRepository->get(1);
     }
@@ -42,14 +43,20 @@ class PostRepositoryTest extends TestCase
     ):void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
+            ->with(
+                'SELECT * FROM posts WHERE id = :id'
+            );
 
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn($inputValue);
 
-        $postRepository = new PostRepository($this->dummyConnector);
+        $postRepository = new PostRepository(
+            $this->connection
+        );
 
         $post = $postRepository->get($expectedPost->getId());
 
@@ -66,18 +73,21 @@ class PostRepositoryTest extends TestCase
     ): void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
             ->with(
                 'INSERT INTO posts (author_id, title, text) VALUES (:author_id, :title, :text)'
-            )
-            ->willReturn($this->PDOStatementMock);
+            );
 
         $this->PDOStatementMock
             ->expects($this->once())
             ->method('execute')
             ->with($executeValue);
 
-        $postRepository = new PostRepository($this->dummyConnector);
+        $postRepository = new PostRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $postRepository->save($post);
     }

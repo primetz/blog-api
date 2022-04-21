@@ -26,7 +26,12 @@ class LikeRepository extends EntityRepository implements LikeRepositoryInterface
             ':id' => (string) $id
         ]);
 
-        return $this->getLike($statement);
+        return $this->getLike(
+            $statement,
+            [
+                'id' => $id
+            ]
+        );
     }
 
     /**
@@ -43,7 +48,13 @@ class LikeRepository extends EntityRepository implements LikeRepositoryInterface
             ':post_id' => (string) $postId,
         ]);
 
-        return $this->getLike($statement);
+        return $this->getLike(
+            $statement,
+            [
+                'userId' => $userId,
+                'postId' => $postId
+            ]
+        );
     }
 
     /**
@@ -59,16 +70,37 @@ class LikeRepository extends EntityRepository implements LikeRepositoryInterface
             ':user_id' => $entity->getUserId(),
             ':post_id' => $entity->getPostId()
         ]);
+
+        $this->logger->info(
+            'Like created',
+            [
+                'likeId' => $this->connection->lastInsertId(),
+                'class' => self::class,
+                'method' => __METHOD__
+            ]
+        );
     }
 
     /**
      * @throws LikeNotFoundException
      */
-    private function getLike(PDOStatement $statement): LikeInterface
+    private function getLike(PDOStatement $statement, array $params): LikeInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+
+            $this->logger->warning(
+                'Failed to find like',
+                [
+                    'params' => $params,
+                    'class' => self::class,
+                    'method' => __METHOD__,
+                    'caller_method' => $backtrace['class'] . '::' . $backtrace['function']
+                ]
+            );
+
             throw new LikeNotFoundException('Can\'t find like');
         }
 

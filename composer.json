@@ -26,6 +26,7 @@
         "fakerphp/faker": "^1.19"
     },
     "require": {
-        "psr/container": "^2.0"
+        "psr/container": "^2.0",
+        "monolog/monolog": "^2.5"
     }
 }

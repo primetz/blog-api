@@ -8,6 +8,7 @@ use App\Repositories\CommentRepository\CommentRepository;
 use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
 use Tests\DummyConnectorTrait;
+use Tests\DummyLogger;
 
 class CommentRepositoryTest extends TestCase
 {
@@ -15,11 +16,8 @@ class CommentRepositoryTest extends TestCase
 
     public function testItThrowsACommentNotFoundExceptionWhenCommentNotFoundById(): void
     {
-        $this->PDOMock
-            ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
-
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn(false);
 
@@ -27,7 +25,10 @@ class CommentRepositoryTest extends TestCase
 
         $this->expectExceptionMessage('Can\'t find comment');
 
-        $commentRepository = new CommentRepository($this->dummyConnector);
+        $commentRepository = new CommentRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $commentRepository->get(1);
     }
@@ -42,14 +43,20 @@ class CommentRepositoryTest extends TestCase
     ): void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
+            ->with(
+                'SELECT * FROM comments WHERE id = :id'
+            );
 
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn($inputValue);
 
-        $commentRepository = new CommentRepository($this->dummyConnector);
+        $commentRepository = new CommentRepository(
+            $this->connection
+        );
 
         $comment = $commentRepository->get($expectedComment->getId());
 
@@ -66,18 +73,21 @@ class CommentRepositoryTest extends TestCase
     ): void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
             ->with(
                 'INSERT INTO comments (author_id, post_id, text) VALUES (:author_id, :post_id, :text)'
-            )
-            ->willReturn($this->PDOStatementMock);
+            );
 
         $this->PDOStatementMock
             ->expects($this->once())
             ->method('execute')
             ->with($executeValue);
 
-        $commentRepository = new CommentRepository($this->dummyConnector);
+        $commentRepository = new CommentRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $commentRepository->save($comment);
     }

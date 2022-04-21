@@ -27,7 +27,12 @@ class CommentRepository extends EntityRepository implements CommentRepositoryInt
             ':id' => (string) $id
         ]);
 
-        return $this->getComment($statement);
+        return $this->getComment(
+            $statement,
+            [
+                'id' => $id
+            ]
+        );
     }
 
     /**
@@ -45,16 +50,37 @@ class CommentRepository extends EntityRepository implements CommentRepositoryInt
             ':post_id' => $entity->getPostId(),
             ':text' => $entity->getText()
         ]);
+
+        $this->logger->info(
+            'Comment created',
+            [
+                'commentId' => $this->connection->lastInsertId(),
+                'class' => self::class,
+                'method' => __METHOD__
+            ]
+        );
     }
 
     /**
      * @throws CommentNotFoundException
      */
-    private function getComment(PDOStatement $statement): CommentInterface
+    private function getComment(PDOStatement $statement, array $params): CommentInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+
+            $this->logger->warning(
+                'Failed to find comment',
+                [
+                    'params' => $params,
+                    'class' => self::class,
+                    'method' => __METHOD__,
+                    'caller_method' => $backtrace['class'] . '::' . $backtrace['function']
+                ]
+            );
+
             throw new CommentNotFoundException('Can\'t find comment');
         }
 

@@ -27,7 +27,12 @@ class PostRepository extends EntityRepository implements PostRepositoryInterface
             ':id' => (string) $id
         ]);
 
-        return $this->getPost($statement);
+        return $this->getPost(
+            $statement,
+            [
+                'id' => $id
+            ]
+        );
     }
 
     /**
@@ -45,16 +50,37 @@ class PostRepository extends EntityRepository implements PostRepositoryInterface
             ':title' => $entity->getTitle(),
             ':text' => $entity->getText()
         ]);
+
+        $this->logger->info(
+            'Post created',
+            [
+                'postId' => $this->connection->lastInsertId(),
+                'class' => self::class,
+                'method' => __METHOD__
+            ]
+        );
     }
 
     /**
      * @throws PostNotFoundException
      */
-    private function getPost(PDOStatement $statement): PostInterface
+    private function getPost(PDOStatement $statement, array $params): PostInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+
+            $this->logger->warning(
+                'Failed to find post',
+                [
+                    'params' => $params,
+                    'class' => self::class,
+                    'method' => __METHOD__,
+                    'caller_method' => $backtrace['class'] . '::' . $backtrace['function']
+                ]
+            );
+
             throw new PostNotFoundException('Can\'t find post');
         }
 

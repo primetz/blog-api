@@ -14,39 +14,40 @@ class CreatePostCommandHandlerTest extends TestCase
     use DummyConnectorTrait;
 
     /**
-     * @dataProvider PostDataProvider
+     * @dataProvider commandDataProvider
      */
     public function testItItSavesPostToDatabase(
-        Post $post
+        CreateEntityCommand $command
     ): void
     {
         $createUserCommandHandler = new CreatePostCommandHandler(
-            $this->dummyConnector
+            $this->connection
         );
 
         $this->PDOMock
             ->expects($this->once())
             ->method('prepare')
-            ->with($createUserCommandHandler->getSql())
-            ->willReturn($this->PDOStatementMock);
+            ->with($createUserCommandHandler->getSql());
 
         $this->PDOStatementMock
             ->expects($this->once())
             ->method('execute')
-            ->with($createUserCommandHandler->getParams($post));
+            ->with($createUserCommandHandler->getParams($command));
 
-        $createUserCommandHandler->handle(new CreateEntityCommand($post));
+        $createUserCommandHandler->handle($command);
     }
 
     #[Pure]
-    public function postDataProvider(): iterable
+    public function commandDataProvider(): iterable
     {
         return [
             [
-                new Post(
-                    1,
-                    'Post title',
-                    'Post text'
+                new CreateEntityCommand(
+                    new Post(
+                        1,
+                        'Post title',
+                        'Post text'
+                    )
                 )
             ]
         ];
