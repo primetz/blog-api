@@ -6,13 +6,23 @@
             "App\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Stanislav Rodikov",
             "email": "stanislav.rodikov@yahoo.com"
         }
     ],
-    "require": {
+    "scripts": {
+        "phpunit-full": "phpunit --testdox --colors tests",
+        "phpunit": "phpunit --testdox --colors"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
         "fakerphp/faker": "^1.19"
     }
 }

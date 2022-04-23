@@ -24,14 +24,14 @@ class ArgumentParserService implements ArgumentParserServiceInterface
     public function parseRawInput(
         array $rawInput,
         array $scheme,
-    ): Argument
+    ): ArgumentInterface
     {
         foreach ($rawInput as $argument) {
             $arguments = explode('=', $argument);
 
             if (count($arguments) !== 2) {
                 throw new ArgumentException(
-                    'Количество аргументов не равно 2.'
+                    'Parameters must be in the format fieldName=fieldValue'
                 );
             }
 
@@ -43,15 +43,16 @@ class ArgumentParserService implements ArgumentParserServiceInterface
         foreach ($scheme as $argument) {
             if (!array_key_exists($argument, $this->argument->getArguments())) {
                 throw new CommandException(
-                    sprintf('No required argument provided %s', $argument)
+                    sprintf('No required argument provided: %s', $argument)
                 );
             }
 
-            if (empty($this->argument->getArguments()[$argument])) {
-                throw new CommandException(
-                    sprintf('Empty argument provided: %s', $argument)
-                );
-            }
+            // TODO не получается воспроизвести это исключение в PHPUnit т.к на 38 строке они записываются в массив только если они не empty
+//            if (empty($this->argument->getArguments()[$argument])) {
+//                throw new CommandException(
+//                    sprintf('Empty argument provided: %s', $argument)
+//                );
+//            }
         }
 
         return $this->argument;

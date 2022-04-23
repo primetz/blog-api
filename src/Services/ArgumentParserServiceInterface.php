@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Classes\Argument;
+use App\Classes\ArgumentInterface;
 
 interface ArgumentParserServiceInterface
 {
     public function parseRawInput(
         array $rawInput,
         array $scheme,
-    ): Argument;
+    ): ArgumentInterface;
 }

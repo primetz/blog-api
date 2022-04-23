@@ -27,7 +27,7 @@ class PostRepository extends EntityRepository implements PostRepositoryInterface
             ':id' => (string) $id
         ]);
 
-        return $this->getPost($statement, $id);
+        return $this->getPost($statement);
     }
 
     /**
@@ -50,14 +50,12 @@ class PostRepository extends EntityRepository implements PostRepositoryInterface
     /**
      * @throws PostNotFoundException
      */
-    private function getPost(PDOStatement $statement, int $postId): PostInterface
+    private function getPost(PDOStatement $statement): PostInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
-            throw new PostNotFoundException(
-                sprintf('Cannot find post with id: %s', $postId)
-            );
+            throw new PostNotFoundException('Can\'t find post');
         }
 
         return new Post(
