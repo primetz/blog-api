@@ -10,12 +10,12 @@ use Psr\Log\LoggerInterface;
 abstract class EntityRepository implements EntityRepositoryInterface
 {
     /**
-     * @param PdoConnectionDriver|null $connection
-     * @param LoggerInterface|null $logger
+     * @param PdoConnectionDriver $connection
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        protected ?ConnectionInterface $connection = null,
-        protected ?LoggerInterface $logger = null,
+        protected ConnectionInterface $connection,
+        protected LoggerInterface $logger,
     )
     {
     }

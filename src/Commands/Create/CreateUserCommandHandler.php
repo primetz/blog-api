@@ -15,8 +15,8 @@ use App\Repositories\UserRepository\UserRepositoryInterface;
 final class CreateUserCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private ?UserRepositoryInterface $userRepository = null,
-        ?ConnectionInterface $connection = null
+        ConnectionInterface $connection,
+        private readonly UserRepositoryInterface $userRepository
     )
     {
         parent::__construct($connection);
@@ -60,7 +60,7 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
 
     public function getSql(): string
     {
-        return 'INSERT INTO users (first_name, last_name, email) VALUES (:firstName, :lastName, :email)';
+        return 'INSERT INTO users (first_name, last_name, email, password) VALUES (:firstName, :lastName, :email, :password)';
     }
 
     /**
@@ -77,6 +77,7 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
             ':firstName' => $user->getFirstName(),
             ':lastName' => $user->getLastName(),
             ':email' => $user->getEmail(),
+            ':password' => $user->hashPassword($user->getPassword()),
         ];
     }
 }

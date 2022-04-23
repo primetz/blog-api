@@ -63,13 +63,14 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
     {
         $statement = $this->connection
             ->prepare(
-                'INSERT INTO users (first_name, last_name, email) VALUES (:first_name, :last_name, :email)'
+                'INSERT INTO users (first_name, last_name, email, password) VALUES (:first_name, :last_name, :email, :password)'
             );
 
         $statement->execute([
             ':first_name' => $entity->getFirstName(),
             ':last_name' => $entity->getLastName(),
-            ':email' => $entity->getEmail()
+            ':email' => $entity->getEmail(),
+            ':password_hash' => $entity->getPassword()
         ]);
 
         $this->logger->info(
@@ -109,6 +110,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
             $result['first_name'],
             $result['last_name'],
             $result['email'],
+            $result['password'],
             $result['id']
         );
     }

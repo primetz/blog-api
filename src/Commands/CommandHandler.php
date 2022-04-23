@@ -8,11 +8,11 @@ use App\Drivers\PdoConnectionDriver\PdoConnectionDriver;
 abstract class CommandHandler implements CommandHandlerInterface
 {
     /**
-     * @var PdoConnectionDriver|null $connection
+     * @var PdoConnectionDriver $connection
      */
 
     public function __construct(
-        protected ?ConnectionInterface $connection = null
+        protected ConnectionInterface $connection
     )
     {
     }

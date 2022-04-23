@@ -10,6 +10,8 @@ use App\Http\Actions\Delete\DeleteUser;
 use App\Http\Actions\Find\FindCommentById;
 use App\Http\Actions\Find\FindPostById;
 use App\Http\Actions\Find\FindUserByEmail;
+use App\Http\Actions\Login\Login;
+use App\Http\Actions\Logout\Logout;
 
 return [
     'GET' => [
@@ -21,7 +23,9 @@ return [
         '/user/create' => CreateUser::class,
         '/post/create' => CreatePost::class,
         '/comment/create' => CreateComment::class,
-        '/like/create' => CreateLike::class
+        '/like/create' => CreateLike::class,
+        '/login' => Login::class,
+        '/logout' => Logout::class
     ],
     'DELETE' => [
         '/user/delete' => DeleteUser::class,

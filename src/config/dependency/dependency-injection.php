@@ -3,6 +3,14 @@
 use App\config\SqliteConfig;
 use App\Drivers\ConnectionInterface;
 use App\Drivers\PdoConnectionDriver\PdoConnectionDriver;
+use App\Http\Auth\BearerTokenAuthentication;
+use App\Http\Auth\PasswordAuthentication;
+use App\Http\Auth\PasswordAuthenticationInterface;
+use App\Http\Auth\TokenAuthenticationInterface;
+use App\Queries\Token\TokenQueryHandler;
+use App\Queries\Token\TokenQueryHandlerInterface;
+use App\Repositories\AuthTokenRepository\AuthTokensRepository;
+use App\Repositories\AuthTokenRepository\AuthTokensRepositoryInterface;
 use App\Repositories\CommentRepository\CommentRepository;
 use App\Repositories\CommentRepository\CommentRepositoryInterface;
 use App\Repositories\LikeRepository\LikeRepository;
@@ -31,5 +39,9 @@ return [
                 Logger::WARNING,
                 false
             )
-        )
+        ),
+    PasswordAuthenticationInterface::class => PasswordAuthentication::class,
+    TokenAuthenticationInterface::class => BearerTokenAuthentication::class,
+    AuthTokensRepositoryInterface::class => AuthTokensRepository::class,
+    TokenQueryHandlerInterface::class => TokenQueryHandler::class
 ];

@@ -15,13 +15,10 @@ use App\Http\SuccessfulResponse;
 
 class CreateUser implements ActionInterface
 {
-    private CreateUserCommandHandler $createUserCommandHandler;
-
     public function __construct(
-        CreateUserCommandHandler $createUserCommandHandler = null
+        private readonly CreateUserCommandHandler $createUserCommandHandler
     )
     {
-        $this->createUserCommandHandler = $createUserCommandHandler ?? new CreateUserCommandHandler();
     }
 
     public function handle(Request $request): Response
@@ -30,7 +27,8 @@ class CreateUser implements ActionInterface
             $user = new User(
                 $request->jsonBodyField('firstName'),
                 $request->jsonBodyField('lastName'),
-                $request->jsonBodyField('email')
+                $request->jsonBodyField('email'),
+                $request->jsonBodyField('password')
             );
 
             $this->createUserCommandHandler->handle(new CreateEntityCommand($user));
