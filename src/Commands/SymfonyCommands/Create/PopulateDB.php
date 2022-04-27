@@ -2,9 +2,11 @@
 
 namespace App\Commands\SymfonyCommands\Create;
 
+use App\Commands\Create\CreateCommentCommandHandler;
 use App\Commands\Create\CreateEntityCommand;
 use App\Commands\Create\CreatePostCommandHandler;
 use App\Commands\Create\CreateUserCommandHandler;
+use App\Entities\Comment\Comment;
 use App\Entities\EntityInterface;
 use App\Entities\Post\Post;
 use App\Entities\User\User;
@@ -12,6 +14,7 @@ use App\Exceptions\UserEmailExistsException;
 use App\Exceptions\UserNotFoundException;
 use App\Faker\Faker;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,6 +24,7 @@ class PopulateDB extends Command
         private readonly Faker $faker,
         private readonly CreateUserCommandHandler $createUserCommandHandler,
         private readonly CreatePostCommandHandler $createPostCommandHandler,
+        private readonly CreateCommentCommandHandler $createCommentCommandHandler,
     )
     {
         parent::__construct();
@@ -30,7 +34,21 @@ class PopulateDB extends Command
     {
         $this
             ->setName('fake-data:populate-db')
-            ->setDescription('Populates DB with fake data');
+            ->setDescription('Populates DB with fake data')
+            ->addOption(
+                'users-number',
+                'u',
+                InputArgument::OPTIONAL,
+                'Number of users created',
+                10
+            )
+            ->addOption(
+                'posts-number',
+                'p',
+                InputArgument::OPTIONAL,
+                'Number of posts created',
+                20
+            );
     }
 
     protected function execute(
@@ -38,12 +56,16 @@ class PopulateDB extends Command
         OutputInterface $output
     ): int
     {
+        $numberUsers = $input->getOption('users-number');
+
+        $numberPosts = $input->getOption('posts-number');
+
         $users = [];
 
         /**
          * @var User $user
          */
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < $numberUsers; $i++) {
             try {
                 $user = $this->createFakeUser();
             } catch (UserEmailExistsException|UserNotFoundException $e) {
@@ -59,15 +81,29 @@ class PopulateDB extends Command
             );
         }
 
+        $posts = [];
+
         /**
          * @var Post $post
          */
         foreach ($users as $user) {
-            for ($i = 0; $i < 20; $i++) {
+            for ($i = 0; $i < $numberPosts; $i++) {
                 $post = $this->createFakePost($user);
+
+                $posts[] = $post;
 
                 $output->writeln(
                     sprintf('Post created: %s', $post->getTitle())
+                );
+            }
+        }
+
+        foreach ($posts as $post) {
+            foreach ($users as $user) {
+                $comment = $this->createFakeComment($user, $post);
+
+                $output->writeln(
+                    sprintf('Comment created: %s', $comment->getText())
                 );
             }
         }
@@ -100,5 +136,19 @@ class PopulateDB extends Command
         );
 
         return $this->createPostCommandHandler->handle(new CreateEntityCommand($post));
+    }
+
+    private function createFakeComment(
+        EntityInterface $author,
+        EntityInterface $post
+    ): EntityInterface
+    {
+        $comment = new Comment(
+            $author->getId(),
+            $post->getId(),
+            $this->faker->realText
+        );
+
+        return $this->createCommentCommandHandler->handle(new CreateEntityCommand($comment));
     }
 }
