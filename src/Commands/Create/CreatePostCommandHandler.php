@@ -5,17 +5,45 @@ namespace App\Commands\Create;
 use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
+use App\Drivers\ConnectionInterface;
+use App\Entities\EntityInterface;
 use App\Entities\Post\PostInterface;
+use App\Repositories\PostRepository\PostRepositoryInterface;
+use PDOException;
 
 final class CreatePostCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
-
-    public function handle(CommandInterface $command): void
+    public function __construct(
+        ConnectionInterface $connection,
+        private PostRepositoryInterface $postRepository
+    )
     {
-        $this->connection->executeQuery(
-            $this->getSql(),
-            $this->getParams($command)
-        );
+        parent::__construct($connection);
+    }
+
+    public function handle(CommandInterface $command): EntityInterface
+    {
+        try {
+            $this->connection->beginTransaction();
+
+            $this->connection->executeQuery(
+                $this->getSql(),
+                $this->getParams($command)
+            );
+
+            $id = $this->connection->lastInsertId();
+
+            $this->connection->commit();
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+
+            print 'Error!: ' . $e->getMessage() . PHP_EOL;
+        }
+
+        /**
+         * @var int $id
+         */
+        return $this->postRepository->get($id);
     }
 
     public function getSql(): string

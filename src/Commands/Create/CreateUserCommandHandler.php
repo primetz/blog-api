@@ -6,6 +6,7 @@ use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
 use App\Drivers\ConnectionInterface;
+use App\Entities\EntityInterface;
 use App\Entities\User\User;
 use App\Entities\User\UserInterface;
 use App\Exceptions\UserEmailExistsException;
@@ -24,8 +25,9 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
 
     /**
      * @throws UserEmailExistsException
+     * @throws UserNotFoundException
      */
-    public function handle(CommandInterface $command): void
+    public function handle(CommandInterface $command): EntityInterface
     {
         /**
          * @var CreateEntityCommand $command
@@ -45,6 +47,8 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
             $this->getSql(),
             $this->getParams($command)
         );
+
+        return $user->getId() ? $user : $this->userRepository->getByEmail($email);
     }
 
     private function isUserExists(string $email): bool

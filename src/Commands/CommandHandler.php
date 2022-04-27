@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Drivers\ConnectionInterface;
 use App\Drivers\PdoConnectionDriver\PdoConnectionDriver;
+use App\Entities\EntityInterface;
 
 abstract class CommandHandler implements CommandHandlerInterface
 {
@@ -22,7 +23,7 @@ abstract class CommandHandler implements CommandHandlerInterface
         return $this->connection->lastInsertId($name) ? (int) $this->connection->lastInsertId($name) : false;
     }
 
-    abstract public function handle(CommandInterface $command): void;
+//    abstract public function handle(CommandInterface $command): EntityInterface;
 
     abstract public function getSql(): string;
 

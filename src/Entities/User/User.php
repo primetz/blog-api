@@ -52,4 +52,18 @@ class User extends Authenticable implements UserInterface
     {
         return $this->email;
     }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
 }

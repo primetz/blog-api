@@ -27,6 +27,7 @@
     },
     "require": {
         "psr/container": "^2.0",
-        "monolog/monolog": "^2.5"
+        "monolog/monolog": "^2.5",
+        "symfony/console": "^6.0"
     }
 }
