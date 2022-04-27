@@ -8,5 +8,5 @@ interface AuthenticableInterface
 
     public function hashPassword(string $password): string;
 
-    public function verifyPassword(string $password, string $hash): bool;
+    public function verifyPassword(string $password): bool;
 }
