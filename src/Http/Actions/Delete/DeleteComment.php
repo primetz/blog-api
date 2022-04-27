@@ -4,7 +4,6 @@ namespace App\Http\Actions\Delete;
 
 use App\Commands\Delete\DeleteCommentCommandHandler;
 use App\Commands\Delete\DeleteEntityCommand;
-use App\Exceptions\CommentNotFoundException;
 use App\Exceptions\HttpException;
 use App\Http\Actions\ActionInterface;
 use App\Http\ErrorResponse;
@@ -29,7 +28,7 @@ class DeleteComment implements ActionInterface
             $id = $request->query('id');
 
             $this->deleteCommentCommandHandler->handle(new DeleteEntityCommand($id));
-        } catch (HttpException|CommentNotFoundException $e) {
+        } catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
 

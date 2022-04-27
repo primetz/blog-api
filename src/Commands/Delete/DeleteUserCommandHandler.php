@@ -5,28 +5,21 @@ namespace App\Commands\Delete;
 use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
-use App\Connections\ConnectorInterface;
-use App\Exceptions\UserNotFoundException;
-use App\Repositories\UserRepository\UserRepository;
+use App\Drivers\ConnectionInterface;
 use App\Repositories\UserRepository\UserRepositoryInterface;
 
 final class DeleteUserCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
-    private UserRepositoryInterface $userRepository;
-
     public function __construct(
-        ?UserRepositoryInterface $userRepository = null,
-        ?ConnectorInterface $connector = null
+        private ?UserRepositoryInterface $userRepository = null,
+        ?ConnectionInterface $connection = null
     )
     {
-        $this->userRepository = $userRepository ?? new UserRepository();
-
-        parent::__construct($connector);
+        parent::__construct($connection);
     }
 
     /**
      * @param DeleteEntityCommand $command
-     * @throws UserNotFoundException
      */
     public function handle(CommandInterface $command): void
     {

@@ -33,7 +33,7 @@ trait DummyConnectorTrait
 
         $this->PDOStatementMock = $PDOStatementMock ?? $this->createMock(PDOStatement::class);
 
-        $this->connection = $connection ?? new DummyConnection($this->PDOMock);
+        $this->connection = $connection ?? new DummyConnection($this->PDOMock, $this->PDOStatementMock);
 
         $this->dummyConnector = $dummyConnector ?? new DummyConnector($this->connection);
     }

@@ -6,6 +6,7 @@ use App\Commands\Create\CreateEntityCommand;
 use App\Commands\Create\CreateUserCommandHandler;
 use App\Entities\User\User;
 use App\Exceptions\UserEmailExistsException;
+use App\Exceptions\UserNotFoundException;
 use App\Repositories\UserRepository\UserRepository;
 use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
@@ -16,9 +17,10 @@ class CreateUserCommandHandlerTest extends TestCase
     use DummyConnectorTrait;
 
     /**
-     * @dataProvider userDataProvider
+     * @dataProvider commandDataProvider
      */
     public function testItThrowsAnUserEmailExistExceptionWhenUserAlreadyExists(
+        CreateEntityCommand $command,
         User $user
     ): void
     {
@@ -34,46 +36,52 @@ class CreateUserCommandHandlerTest extends TestCase
 
         $createUserCommandHandler = new CreateUserCommandHandler($userRepositoryStub);
 
-        $createUserCommandHandler->handle(new CreateEntityCommand($user));
+        $createUserCommandHandler->handle($command);
     }
 
     /**
-     * @dataProvider userDataProvider
+     * @dataProvider commandDataProvider
      * @throws UserEmailExistsException
      */
     public function testItItSavesUserToDatabase(
-        User $user
+        CreateEntityCommand $command
     ): void
     {
+        $userRepositoryStub = $this->createStub(UserRepository::class);
+
+        $userRepositoryStub->method('getByEmail')->willThrowException(new UserNotFoundException());
+
         $createUserCommandHandler = new CreateUserCommandHandler(
-            new UserRepository(),
-            $this->dummyConnector
+            $userRepositoryStub,
+            $this->connection
         );
 
         $this->PDOMock
             ->expects($this->once())
             ->method('prepare')
-            ->with($createUserCommandHandler->getSql())
-            ->willReturn($this->PDOStatementMock);
+            ->with($createUserCommandHandler->getSql());
 
         $this->PDOStatementMock
             ->expects($this->once())
             ->method('execute')
-            ->with($createUserCommandHandler->getParams($user));
+            ->with($createUserCommandHandler->getParams($command));
 
-        $createUserCommandHandler->handle(new CreateEntityCommand($user));
+        $createUserCommandHandler->handle($command);
     }
 
     #[Pure]
-    public function userDataProvider(): iterable
+    public function commandDataProvider(): iterable
     {
+        $user = new User(
+            'Stanislav',
+            'Rodikov',
+            'example1000@example1000.com',
+        );
+
         return [
             [
-                new User(
-                    'Stanislav',
-                    'Rodikov',
-                    'example1000@example1000.com',
-                )
+                new CreateEntityCommand($user),
+                $user
             ]
         ];
     }

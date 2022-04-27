@@ -29,7 +29,7 @@ class DeleteUser implements ActionInterface
             $id = $request->query('id');
 
             $this->deleteUserCommandHandler->handle(new DeleteEntityCommand($id));
-        } catch (HttpException|UserNotFoundException $e) {
+        } catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
 

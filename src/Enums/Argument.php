@@ -10,10 +10,13 @@ enum Argument: string
 
     case COMMENT = 'comment';
 
+    case LIKE = 'like';
+
     public const ARGUMENTS = [
         Argument::USER,
         Argument::POST,
         Argument::COMMENT,
+        Argument::LIKE,
     ];
 
     public static function getArgumentValues(): array
@@ -22,6 +25,7 @@ enum Argument: string
             Argument::USER->value,
             Argument::POST->value,
             Argument::COMMENT->value,
+            Argument::LIKE->value,
         ];
     }
 }

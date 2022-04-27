@@ -2,9 +2,10 @@
 
 namespace App\Entities\User;
 
+use App\Http\Auth\Authenticable;
 use JetBrains\PhpStorm\Pure;
 
-class User implements UserInterface
+class User extends Authenticable implements UserInterface
 {
     private ?int $id;
 
@@ -12,10 +13,13 @@ class User implements UserInterface
         private string $firstName,
         private string $lastName,
         private string $email,
+        string $password,
         int $id = null
     )
     {
         $this->id = $id;
+
+        parent::__construct($password);
     }
 
     #[Pure] public function __toString(): string

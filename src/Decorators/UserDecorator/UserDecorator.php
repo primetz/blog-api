@@ -17,6 +17,8 @@ class UserDecorator extends Decorator implements DecoratorInterface
 
     public const EMAIL = 'email';
 
+    public const PASSWORD = 'password';
+
     public ?int $id;
 
     public string $firstName;
@@ -25,10 +27,13 @@ class UserDecorator extends Decorator implements DecoratorInterface
 
     public string $email;
 
+    public string $password;
+
     public const REQUIRED_FIELDS = [
         self::FIRST_NAME,
         self::LAST_NAME,
         self::EMAIL,
+        self::PASSWORD,
     ];
 
     /**
@@ -48,6 +53,8 @@ class UserDecorator extends Decorator implements DecoratorInterface
         $this->lastName = $userFieldData->get(self::LAST_NAME) ?? null;
 
         $this->email = $userFieldData->get(self::EMAIL) ?? null;
+
+        $this->password = $userFieldData->get(self::PASSWORD) ?? null;
     }
 
     public function getRequiredFields(): array

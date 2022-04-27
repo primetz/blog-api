@@ -6,7 +6,7 @@ class Migration_users_table_create_v_1 extends Migration implements MigrationInt
 {
     public function execute(): void
     {
-        $this->connector->getConnection()->query(
+        $this->connection->query(
             'CREATE TABLE users (
                           id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                           first_name VARCHAR(100),

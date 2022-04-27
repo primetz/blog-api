@@ -26,7 +26,12 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
             ':id' => (string) $id
         ]);
 
-        return $this->getUser($statement);
+        return $this->getUser(
+            $statement,
+            [
+                'id' => $id
+            ]
+        );
     }
 
     /**
@@ -43,7 +48,12 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
             ':email' => $email
         ]);
 
-        return $this->getUser($statement);
+        return $this->getUser(
+            $statement,
+            [
+                'email' => $email
+            ]
+        );
     }
 
     /**
@@ -53,24 +63,46 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
     {
         $statement = $this->connection
             ->prepare(
-                'INSERT INTO users (first_name, last_name, email) VALUES (:first_name, :last_name, :email)'
+                'INSERT INTO users (first_name, last_name, email, password) VALUES (:first_name, :last_name, :email, :password)'
             );
 
         $statement->execute([
             ':first_name' => $entity->getFirstName(),
             ':last_name' => $entity->getLastName(),
-            ':email' => $entity->getEmail()
+            ':email' => $entity->getEmail(),
+            ':password_hash' => $entity->getPassword()
         ]);
+
+        $this->logger->info(
+            'User created',
+            [
+                'userId' => $this->connection->lastInsertId(),
+                'class' => self::class,
+                'method' => __METHOD__
+            ]
+        );
     }
 
     /**
      * @throws UserNotFoundException
      */
-    private function getUser(PDOStatement $statement): UserInterface
+    private function getUser(PDOStatement $statement, array $params): UserInterface
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (false === $result) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+
+            $this->logger->warning(
+                'Failed to find user',
+                [
+                    'params' => $params,
+                    'class' => self::class,
+                    'method' => __METHOD__,
+                    'caller_method' => $backtrace['class'] . '::' . $backtrace['function']
+                ]
+            );
+
             throw new UserNotFoundException('Can\'t find user');
         }
 
@@ -78,6 +110,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
             $result['first_name'],
             $result['last_name'],
             $result['email'],
+            $result['password'],
             $result['id']
         );
     }

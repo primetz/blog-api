@@ -8,6 +8,7 @@ use App\Repositories\UserRepository\UserRepository;
 use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
 use Tests\DummyConnectorTrait;
+use Tests\DummyLogger;
 
 class UserRepositoryTest extends TestCase
 {
@@ -15,11 +16,8 @@ class UserRepositoryTest extends TestCase
 
     public function testItThrowsAnUserNotFoundExceptionWhenUserNotFoundById(): void
     {
-        $this->PDOMock
-            ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
-
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn(false);
 
@@ -27,18 +25,18 @@ class UserRepositoryTest extends TestCase
 
         $this->expectExceptionMessage('Can\'t find user');
 
-        $userRepository = new UserRepository($this->dummyConnector);
+        $userRepository = new UserRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $userRepository->get(1);
     }
 
     public function testItThrowsAnUserNotFoundExceptionWhenUserNotFoundByEmail(): void
     {
-        $this->PDOMock
-            ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
-
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn(false);
 
@@ -46,7 +44,10 @@ class UserRepositoryTest extends TestCase
 
         $this->expectExceptionMessage('Can\'t find user');
 
-        $userRepository = new UserRepository($this->dummyConnector);
+        $userRepository = new UserRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $userRepository->getByEmail('example@example.com');
     }
@@ -61,14 +62,20 @@ class UserRepositoryTest extends TestCase
     ): void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
+            ->with(
+                'SELECT * FROM users WHERE id = :id'
+            );
 
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn($inputValue);
 
-        $userRepository = new UserRepository($this->dummyConnector);
+        $userRepository = new UserRepository(
+            $this->connection
+        );
 
         $user = $userRepository->get($expectedUser->getId());
 
@@ -85,14 +92,20 @@ class UserRepositoryTest extends TestCase
     ): void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
-            ->willReturn($this->PDOStatementMock);
+            ->with(
+                'SELECT * FROM users WHERE email = :email'
+            );
 
         $this->PDOStatementMock
+            ->expects($this->once())
             ->method('fetch')
             ->willReturn($inputValue);
 
-        $userRepository = new UserRepository($this->dummyConnector);
+        $userRepository = new UserRepository(
+            $this->connection
+        );
 
         $user = $userRepository->getByEmail($expectedUser->getEmail());
 
@@ -109,18 +122,21 @@ class UserRepositoryTest extends TestCase
     ): void
     {
         $this->PDOMock
+            ->expects($this->once())
             ->method('prepare')
             ->with(
                 'INSERT INTO users (first_name, last_name, email) VALUES (:first_name, :last_name, :email)'
-            )
-            ->willReturn($this->PDOStatementMock);
+            );
 
         $this->PDOStatementMock
             ->expects($this->once())
             ->method('execute')
             ->with($executeValue);
 
-        $userRepository = new UserRepository($this->dummyConnector);
+        $userRepository = new UserRepository(
+            $this->connection,
+            new DummyLogger()
+        );
 
         $userRepository->save($user);
     }

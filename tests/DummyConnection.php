@@ -10,18 +10,37 @@ class DummyConnection implements ConnectionInterface
 {
     private PDO $connection;
 
-    public function __construct(PDO $connection)
+    private PDOStatement $PDOStatementMock;
+
+    public function __construct(
+        PDO $connection,
+        PDOStatement $PDOStatementMock
+    )
     {
         $this->connection = $connection;
+
+        $this->PDOStatementMock = $PDOStatementMock;
     }
 
-    public function prepare(string $query): bool|PDOStatement
+    public function prepare(string $query): PDOStatement
     {
-        return $this->connection->prepare($query);
+        $this->connection->prepare($query);
+
+        return $this->PDOStatementMock;
+    }
+
+    public function execute(array $params)
+    {
+        $this->PDOStatementMock->execute($params);
     }
 
     public function executeQuery(string $query, array $params): void
     {
-        $this->connection->prepare($query)->execute($params);
+        $this->prepare($query)->execute($params);
+    }
+
+    public function lastInsertId($name = null): bool|string
+    {
+        return $this->connection->lastInsertId($name);
     }
 }

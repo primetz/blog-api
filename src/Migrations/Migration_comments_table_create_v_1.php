@@ -6,7 +6,7 @@ class Migration_comments_table_create_v_1 extends Migration implements Migration
 {
     public function execute(): void
     {
-        $this->connector->getConnection()->query(
+        $this->connection->query(
             'CREATE TABLE comments (
                           id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                           author_id INTEGER NOT NULL,

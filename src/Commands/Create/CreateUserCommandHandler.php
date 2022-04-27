@@ -5,26 +5,21 @@ namespace App\Commands\Create;
 use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
-use App\Connections\ConnectorInterface;
+use App\Drivers\ConnectionInterface;
 use App\Entities\User\User;
 use App\Entities\User\UserInterface;
 use App\Exceptions\UserEmailExistsException;
 use App\Exceptions\UserNotFoundException;
-use App\Repositories\UserRepository\UserRepository;
 use App\Repositories\UserRepository\UserRepositoryInterface;
 
 final class CreateUserCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
-    private ?UserRepositoryInterface $userRepository;
-
     public function __construct(
-        UserRepositoryInterface $userRepository = null,
-        ConnectorInterface $connector = null
+        ConnectionInterface $connection,
+        private readonly UserRepositoryInterface $userRepository
     )
     {
-        $this->userRepository = $userRepository ?? new UserRepository();
-
-        parent::__construct($connector);
+        parent::__construct($connection);
     }
 
     /**
@@ -65,7 +60,7 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
 
     public function getSql(): string
     {
-        return 'INSERT INTO users (first_name, last_name, email) VALUES (:firstName, :lastName, :email)';
+        return 'INSERT INTO users (first_name, last_name, email, password) VALUES (:firstName, :lastName, :email, :password)';
     }
 
     /**
@@ -82,6 +77,7 @@ final class CreateUserCommandHandler extends CommandHandler implements CommandHa
             ':firstName' => $user->getFirstName(),
             ':lastName' => $user->getLastName(),
             ':email' => $user->getEmail(),
+            ':password' => $user->hashPassword($user->getPassword()),
         ];
     }
 }

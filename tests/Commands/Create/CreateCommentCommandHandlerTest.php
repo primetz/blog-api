@@ -14,39 +14,40 @@ class CreateCommentCommandHandlerTest extends TestCase
     use DummyConnectorTrait;
 
     /**
-     * @dataProvider commentDataProvider
+     * @dataProvider commandDataProvider
      */
     public function testItItSavesCommentToDatabase(
-        Comment $comment
+        CreateEntityCommand $command
     ): void
     {
         $createCommentCommandHandler = new CreateCommentCommandHandler(
-            $this->dummyConnector
+            $this->connection
         );
 
         $this->PDOMock
             ->expects($this->once())
             ->method('prepare')
-            ->with($createCommentCommandHandler->getSql())
-            ->willReturn($this->PDOStatementMock);
+            ->with($createCommentCommandHandler->getSql());
 
         $this->PDOStatementMock
             ->expects($this->once())
             ->method('execute')
-            ->with($createCommentCommandHandler->getParams($comment));
+            ->with($createCommentCommandHandler->getParams($command));
 
-        $createCommentCommandHandler->handle(new CreateEntityCommand($comment));
+        $createCommentCommandHandler->handle($command);
     }
 
     #[Pure]
-    public function commentDataProvider(): iterable
+    public function commandDataProvider(): iterable
     {
         return [
             [
-                new Comment(
-                    1,
-                    1,
-                    'Comment text'
+                new CreateEntityCommand(
+                    new Comment(
+                        1,
+                        1,
+                        'Comment text'
+                    )
                 )
             ]
         ];

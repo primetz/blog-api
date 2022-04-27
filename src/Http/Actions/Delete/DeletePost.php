@@ -5,7 +5,6 @@ namespace App\Http\Actions\Delete;
 use App\Commands\Delete\DeleteEntityCommand;
 use App\Commands\Delete\DeletePostCommandHandler;
 use App\Exceptions\HttpException;
-use App\Exceptions\PostNotFoundException;
 use App\Http\Actions\ActionInterface;
 use App\Http\ErrorResponse;
 use App\Http\Request;
@@ -29,7 +28,7 @@ class DeletePost implements ActionInterface
             $id = $request->query('id');
 
             $this->deletePostCommandHandler->handle(new DeleteEntityCommand($id));
-        } catch (HttpException|PostNotFoundException $e) {
+        } catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
 

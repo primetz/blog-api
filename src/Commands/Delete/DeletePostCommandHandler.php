@@ -5,28 +5,21 @@ namespace App\Commands\Delete;
 use App\Commands\CommandHandler;
 use App\Commands\CommandHandlerInterface;
 use App\Commands\CommandInterface;
-use App\Connections\ConnectorInterface;
-use App\Exceptions\PostNotFoundException;
-use App\Repositories\PostRepository\PostRepository;
+use App\Drivers\ConnectionInterface;
 use App\Repositories\PostRepository\PostRepositoryInterface;
 
 final class DeletePostCommandHandler extends CommandHandler implements CommandHandlerInterface
 {
-    private PostRepositoryInterface $postRepository;
-
     public function __construct(
-        PostRepositoryInterface $postRepository = null,
-        ?ConnectorInterface $connector = null
+        private ?PostRepositoryInterface $postRepository = null,
+        ?ConnectionInterface $connection = null
     )
     {
-        $this->postRepository = $postRepository ?? new PostRepository();
-
-        parent::__construct($connector);
+        parent::__construct($connection);
     }
 
     /**
      * @param DeleteEntityCommand $command
-     * @throws PostNotFoundException
      */
     public function handle(CommandInterface $command): void
     {

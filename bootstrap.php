@@ -5,6 +5,8 @@ use App\Http\ErrorResponse;
 use App\Http\Request;
 use App\Http\Response;
 
+$container = require_once __DIR__ . '/container.php';
+
 $routes = require_once __DIR__ . '/src/config/routes/routes.php';
 
 $request = new Request(
@@ -37,7 +39,9 @@ if (!array_key_exists($path, $routes[$method])) {
     return;
 }
 
-$action = $routes[$method][$path];
+$actionClassName = $routes[$method][$path];
+
+$action = $container->get($actionClassName);
 
 try {
     $response = $action->handle($request);

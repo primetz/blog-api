@@ -2,22 +2,22 @@
 
 namespace App\Repositories;
 
-use App\Connections\ConnectorInterface;
-use App\Connections\SqlLiteConnector\SqlLiteConnector;
 use App\Drivers\ConnectionInterface;
+use App\Drivers\PdoConnectionDriver\PdoConnectionDriver;
 use App\Entities\EntityInterface;
+use Psr\Log\LoggerInterface;
 
 abstract class EntityRepository implements EntityRepositoryInterface
 {
-    protected ConnectionInterface $connection;
-
+    /**
+     * @param PdoConnectionDriver $connection
+     * @param LoggerInterface $logger
+     */
     public function __construct(
-        ConnectorInterface $connector = null,
+        protected ConnectionInterface $connection,
+        protected LoggerInterface $logger,
     )
     {
-        $connector = $connector ?? new SqlLiteConnector();
-
-        $this->connection = $connector->getConnection();
     }
 
     abstract public function get(int $id): EntityInterface;
