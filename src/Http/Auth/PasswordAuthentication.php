@@ -45,7 +45,7 @@ class PasswordAuthentication implements PasswordAuthenticationInterface
             throw new AuthException($e->getMessage());
         }
 
-        if (!$user->verifyPassword($password, $user->getPassword())) {
+        if (!$user->verifyPassword($password)) {
             throw new AuthException('Wrong password');
         }
 

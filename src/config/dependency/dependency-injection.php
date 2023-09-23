@@ -3,6 +3,7 @@
 use App\config\SqliteConfig;
 use App\Drivers\ConnectionInterface;
 use App\Drivers\PdoConnectionDriver\PdoConnectionDriver;
+use App\Faker\Faker;
 use App\Http\Auth\BearerTokenAuthentication;
 use App\Http\Auth\PasswordAuthentication;
 use App\Http\Auth\PasswordAuthenticationInterface;
@@ -19,9 +20,20 @@ use App\Repositories\PostRepository\PostRepository;
 use App\Repositories\PostRepository\PostRepositoryInterface;
 use App\Repositories\UserRepository\UserRepository;
 use App\Repositories\UserRepository\UserRepositoryInterface;
+use Faker\Provider\Lorem;
+use Faker\Provider\ru_RU\Internet;
+use Faker\Provider\ru_RU\Person;
+use Faker\Provider\ru_RU\Text;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+
+$faker = new Faker();
+
+$faker->addProvider(new Person($faker));
+$faker->addProvider(new Text($faker));
+$faker->addProvider(new Internet($faker));
+$faker->addProvider(new Lorem($faker));
 
 return [
     UserRepositoryInterface::class => UserRepository::class,
@@ -43,5 +55,6 @@ return [
     PasswordAuthenticationInterface::class => PasswordAuthentication::class,
     TokenAuthenticationInterface::class => BearerTokenAuthentication::class,
     AuthTokensRepositoryInterface::class => AuthTokensRepository::class,
-    TokenQueryHandlerInterface::class => TokenQueryHandler::class
+    TokenQueryHandlerInterface::class => TokenQueryHandler::class,
+    Faker::class => $faker,
 ];

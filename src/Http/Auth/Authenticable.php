@@ -20,8 +20,8 @@ class Authenticable implements AuthenticableInterface
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public function verifyPassword(string $password, string $hash): bool
+    public function verifyPassword(string $password): bool
     {
-        return password_verify($password, $hash);
+        return password_verify($password, $this->password);
     }
 }
